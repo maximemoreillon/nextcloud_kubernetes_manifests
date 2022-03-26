@@ -8,7 +8,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 100Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -25,24 +25,18 @@ spec:
       labels:
         app: nextcloud
     spec:
-      volumes:
-      - name: nextcloud
-        persistentVolumeClaim:
-          claimName: nextcloud
       containers:
       - name: nextcloud
-        image: nextcloud
+        image: nextcloud:23.0.3
         ports:
         - containerPort: 80
         volumeMounts:
-        - mountPath: "/var/www/html"
+        - mountPath: /var/www/html
           name: nextcloud
-        env:
-        - name: TRUSTED_PROXIES
-          value: 192.168.1.2
-        - name: OVERWRITEPROTOCOL
-          value: https
-
+      volumes:
+        - name: nextcloud
+        persistentVolumeClaim:
+          claimName: nextcloud
 ---
 apiVersion: v1
 kind: Service
@@ -64,8 +58,8 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/proxy-body-size: "5g"
-    nginx/client_max_body_size: 5g
+    nginx.ingress.kubernetes.io/proxy-body-size: 4G
+    nginx/client_max_body_size: 4G
 spec:
   tls:
   - hosts:
@@ -79,3 +73,33 @@ spec:
         backend:
           serviceName: nextcloud
           servicePort: 80
+---
+# Deployment for cron jobs
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cron
+  namespace: nextcloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cron
+  template:
+    metadata:
+      labels:
+        app: cron
+    spec:
+      containers:
+      - image: nextcloud:23.0.3
+        name: cron
+        command:
+        - /cron.sh
+        volumeMounts:
+        - mountPath: /var/www/html
+          name: nextcloud
+      restartPolicy: Always
+      volumes:
+      - name: nextcloud
+        persistentVolumeClaim:
+          claimName: nextcloud
