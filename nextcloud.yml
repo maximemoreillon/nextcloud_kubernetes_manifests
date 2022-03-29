@@ -35,8 +35,8 @@ spec:
           name: nextcloud
       volumes:
         - name: nextcloud
-        persistentVolumeClaim:
-          claimName: nextcloud
+          persistentVolumeClaim:
+            claimName: nextcloud
 ---
 apiVersion: v1
 kind: Service
