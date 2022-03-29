@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: environment
+  namespace: nextcloud
+type: Opaque
+stringData:
+
+  # MariaDB config
+  MYSQL_DATABASE : nextcloud
+  MYSQL_USER: nextcloud
+  MYSQL_PASSWORD: keyboardcat
+  MYSQL_ROOT_PASSWORD: keyboardcat
+
+  # NextCloud config
+  OVERWRITEPROTOCOL: https
+  #TRUSTED_PROXIES: 192.168.1.2

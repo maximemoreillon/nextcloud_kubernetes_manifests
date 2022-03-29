@@ -30,15 +30,9 @@ spec:
         image: mariadb:10.5.9
         ports:
         - containerPort: 3306
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: keyboardcat
-        - name: MYSQL_DATABASE
-          value: nextcloud
-        - name: MYSQL_USER
-          value: nextcloud
-        - name: MYSQL_PASSWORD
-          value: keyboardcat
+        envFrom:
+        - secretRef:
+           name: environment
         volumeMounts:
           - mountPath: /var/lib/mysql
             name: mariadb
