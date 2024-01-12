@@ -26,16 +26,16 @@ spec:
         app: mariadb
     spec:
       containers:
-      - name: mariadb
-        image: mariadb:10.5.9
-        ports:
-        - containerPort: 3306
-        envFrom:
-        - secretRef:
-           name: environment
-        volumeMounts:
-          - mountPath: /var/lib/mysql
-            name: mariadb
+        - name: mariadb
+          image: mariadb:10.5.9
+          ports:
+            - containerPort: 3306
+          envFrom:
+            - secretRef:
+                name: environment
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb
       volumes:
         - name: mariadb
           persistentVolumeClaim:
@@ -47,9 +47,8 @@ metadata:
   name: mariadb
   namespace: nextcloud
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: mariadb
   ports:
-  - port: 3306
-    nodePort: 30306
+    - port: 3306
